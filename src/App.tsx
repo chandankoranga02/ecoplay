@@ -1,4 +1,5 @@
 import React from 'react';
+import LandingPage from './pages/LandingPage';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { GameProvider } from './context/GameContext';
@@ -26,7 +27,7 @@ export default function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/" element={<Protected><Dashboard /></Protected>} />
+            <Route path="/" element={<LandingPage />} />
             <Route path="/dashboard" element={<Protected><Dashboard /></Protected>} />
             <Route path="/ocean-cleanup-game" element={<Protected><OceanCleanupGame /></Protected>} />
             <Route path="/eco-village" element={<Protected><EcoVillage /></Protected>} />
