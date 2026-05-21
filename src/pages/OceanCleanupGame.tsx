@@ -2,13 +2,13 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGame } from '../context/GameContext';
 import { 
-  Play, 
-  Trophy, 
-  Zap,
-  Target,
-  Clock,
-  Star
-} from 'lucide-react';
+  TbPlayerPlay, 
+  TbTrophy, 
+  TbTarget, 
+  TbClock, 
+  TbStar,
+  TbTrash
+} from 'react-icons/tb';
 
 interface TrashItem {
   id: string;
@@ -267,20 +267,22 @@ const OceanCleanupGame = () => {
 
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
         {[
-          { icon: Trophy, label: 'Score', value: score.toLocaleString(), color: 'text-yellow-400' },
-          { icon: Clock, label: 'Time', value: formatTime(timeLeft), color: 'text-blue-400' },
-          { icon: Target, label: 'Level', value: level.toString(), color: 'text-green-400' },
-          { icon: Star, label: 'Combo', value: `x${combo}`, color: 'text-purple-400' },
-          { icon: Zap, label: 'Collected', value: totalCollected.toString(), color: 'text-orange-400' }
+          { icon: TbTrophy, label: 'Score', value: score.toLocaleString(), color: 'text-yellow-400', bgColor: 'bg-yellow-500/15 border-yellow-500/30' },
+          { icon: TbClock, label: 'Time', value: formatTime(timeLeft), color: 'text-sky-300', bgColor: 'bg-sky-500/15 border-sky-500/30' },
+          { icon: TbTarget, label: 'Level', value: level.toString(), color: 'text-green-400', bgColor: 'bg-green-500/15 border-green-500/30' },
+          { icon: TbStar, label: 'Combo', value: `x${combo}`, color: 'text-purple-400', bgColor: 'bg-purple-500/15 border-purple-500/30' },
+          { icon: TbTrash, label: 'Collected', value: totalCollected.toString(), color: 'text-orange-400', bgColor: 'bg-orange-500/15 border-orange-500/30' }
         ].map((stat) => {
           const Icon = stat.icon;
           return (
             <motion.div
               key={stat.label}
               whileHover={{ scale: 1.05 }}
-              className="bg-white/10 backdrop-blur-lg rounded-xl p-4 text-center border border-white/20"
+              className="bg-white/10 backdrop-blur-lg rounded-xl p-4 text-center border border-white/20 flex flex-col items-center justify-center"
             >
-              <Icon className={`h-6 w-6 ${stat.color} mx-auto mb-2`} />
+              <div className={`w-10 h-10 rounded-lg ${stat.bgColor} flex items-center justify-center mb-2 border`}>
+                <Icon className={`h-5 w-5 ${stat.color}`} />
+              </div>
               <p className="text-2xl font-bold text-white">{stat.value}</p>
               <p className="text-sm text-blue-100">{stat.label}</p>
             </motion.div>
@@ -309,9 +311,9 @@ const OceanCleanupGame = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={startGame}
-                className="bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold py-4 px-8 rounded-xl text-xl hover:from-green-600 hover:to-blue-600 transition-all"
+                className="bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold py-4 px-8 rounded-xl text-xl hover:from-green-600 hover:to-blue-600 transition-all animate-bounce-subtle"
               >
-                <Play className="h-6 w-6 inline mr-2" />
+                <TbPlayerPlay className="h-6 w-6 inline mr-2 text-white" />
                 {gameStarted ? 'Play Again' : 'Start Game'}
               </motion.button>
             </div>
