@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { GameProvider } from './context/GameContext';
+import { ThemeProvider } from './context/ThemeContext';
 import Layout from './components/Layout';
 
 import Auth from './pages/Auth';
@@ -37,28 +38,30 @@ const Protected: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <GameProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<Auth />} />
+    <ThemeProvider>
+      <AuthProvider>
+        <GameProvider>
+          <BrowserRouter>
+            <Routes>
+              {/* Public routes */}
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<Auth />} />
 
-            {/* Protected routes */}
-            <Route path="/dashboard" element={<Protected><Dashboard /></Protected>} />
-            <Route path="/ocean-cleanup-game" element={<Protected><OceanCleanupGame /></Protected>} />
-            <Route path="/eco-village" element={<Protected><EcoVillage /></Protected>} />
-            <Route path="/learn" element={<Protected><Learn /></Protected>} />
-            <Route path="/bingo" element={<Protected><Bingo /></Protected>} />
-            <Route path="/community" element={<Protected><Community /></Protected>} />
-            <Route path="/events" element={<Protected><Events /></Protected>} />
+              {/* Protected routes */}
+              <Route path="/dashboard" element={<Protected><Dashboard /></Protected>} />
+              <Route path="/ocean-cleanup-game" element={<Protected><OceanCleanupGame /></Protected>} />
+              <Route path="/eco-village" element={<Protected><EcoVillage /></Protected>} />
+              <Route path="/learn" element={<Protected><Learn /></Protected>} />
+              <Route path="/bingo" element={<Protected><Bingo /></Protected>} />
+              <Route path="/community" element={<Protected><Community /></Protected>} />
+              <Route path="/events" element={<Protected><Events /></Protected>} />
 
-            {/* Fallback */}
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
-        </BrowserRouter>
-      </GameProvider>
-    </AuthProvider>
+              {/* Fallback */}
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </GameProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

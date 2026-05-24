@@ -1,5 +1,5 @@
 # EcoPlay 🌍
-
+star repo before contributing !! 
 > A gamified environmental education platform that makes sustainability fun, measurable, and community-driven.
 
 [![React](https://img.shields.io/badge/React-18+-61DAFB?style=flat&logo=react&logoColor=black)](https://reactjs.org/)
@@ -10,7 +10,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
-## Live Demo: [ecoplaydeploy.vercel.app](https://ecoplaydeploy.vercel.app/)
+## Live Demo: [ecoplay-gamma.vercel.app](https://ecoplay-gamma.vercel.app)
 
 ---
 ## Table of Contents

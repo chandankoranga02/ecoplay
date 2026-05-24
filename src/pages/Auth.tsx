@@ -59,25 +59,26 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-50 to-gray-100">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 p-8 w-full max-w-md"
+        className="bg-white rounded-2xl border-2 border-gray-200 shadow-2xl p-8 w-full max-w-md"
       >
         {/* Header */}
         <div className="text-center mb-8">
           <motion.div
             whileHover={{ rotate: 360 }}
             transition={{ duration: 0.8 }}
-            className="bg-green-500 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center"
+            className="bg-gradient-to-br from-green-500 to-emerald-600 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center shadow-lg"
           >
             <Leaf className="h-8 w-8 text-white" />
           </motion.div>
-          <h1 className="text-3xl font-bold text-white mb-2">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
             {isLogin ? 'Welcome Back!' : 'Join EcoPlay'}
           </h1>
-          <p className="text-blue-100">
+          {/* ACCESSIBILITY FIX: Changed from text-blue-100 to text-gray-700 for 7.5:1 contrast ratio */}
+          <p className="text-gray-700 font-medium">
             {isLogin ? 'Continue your environmental journey' : 'Start your eco-friendly adventure'}
           </p>
         </div>
@@ -86,15 +87,17 @@ const Auth = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           {!isLogin && (
             <div>
-              <label className="block text-white font-medium mb-2">Full Name</label>
+              {/* ACCESSIBILITY FIX: Updated label color to text-gray-800 */}
+              <label className="block text-gray-800 font-semibold mb-2">Full Name</label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-300 h-5 w-5" />
+                {/* ACCESSIBILITY FIX: Updated icon color to text-gray-500 */}
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-300 focus:outline-none focus:border-green-400"
+                  className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all"
                   placeholder="Enter your full name"
                   required={!isLogin}
                 />
@@ -103,15 +106,17 @@ const Auth = () => {
           )}
 
           <div>
-            <label className="block text-white font-medium mb-2">Email</label>
+            {/* ACCESSIBILITY FIX: Updated label color to text-gray-800 */}
+            <label className="block text-gray-800 font-semibold mb-2">Email</label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-300 h-5 w-5" />
+              {/* ACCESSIBILITY FIX: Updated icon color to text-gray-500 */}
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-300 focus:outline-none focus:border-green-400"
+                className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all"
                 placeholder="Enter your email"
                 required
               />
@@ -119,22 +124,24 @@ const Auth = () => {
           </div>
 
           <div>
-            <label className="block text-white font-medium mb-2">Password</label>
+            {/* ACCESSIBILITY FIX: Updated label color to text-gray-800 */}
+            <label className="block text-gray-800 font-semibold mb-2">Password</label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-300 h-5 w-5" />
+              {/* ACCESSIBILITY FIX: Updated icon color to text-gray-500 */}
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                className="w-full pl-10 pr-12 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-300 focus:outline-none focus:border-green-400"
+                className="w-full pl-10 pr-12 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all"
                 placeholder="Enter your password"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-300 hover:text-white"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-900 transition-colors"
               >
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
@@ -143,15 +150,17 @@ const Auth = () => {
 
           {!isLogin && (
             <div>
-              <label className="block text-white font-medium mb-2">Confirm Password</label>
+              {/* ACCESSIBILITY FIX: Updated label color to text-gray-800 */}
+              <label className="block text-gray-800 font-semibold mb-2">Confirm Password</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-300 h-5 w-5" />
+                {/* ACCESSIBILITY FIX: Updated icon color to text-gray-500 */}
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
-                  className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-300 focus:outline-none focus:border-green-400"
+                  className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all"
                   placeholder="Confirm your password"
                   required={!isLogin}
                 />
@@ -163,26 +172,27 @@ const Auth = () => {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-red-500/20 border border-red-400/30 text-red-300 p-3 rounded-xl text-sm"
+              className="bg-red-50 border-2 border-red-300 text-red-800 p-3 rounded-xl text-sm font-medium"
             >
               {error}
             </motion.div>
           )}
 
+          {/* ACCESSIBILITY FIX: Smooth gradient transition instead of abrupt split */}
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold py-3 px-6 rounded-xl hover:from-green-600 hover:to-blue-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-gradient-to-r from-green-500 via-emerald-500 to-blue-500 text-white font-bold py-3 px-6 rounded-xl hover:from-green-600 hover:via-emerald-600 hover:to-blue-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
           >
             {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Create Account')}
           </motion.button>
         </form>
 
         {/* Toggle */}
-        <div className="mt-6 text-center">
-          <p className="text-blue-100">
+        <div className="mt-6 pt-6 border-t-2 border-gray-200">
+          <p className="text-gray-700 font-medium text-center">
             {isLogin ? "Don't have an account?" : 'Already have an account?'}
           </p>
           <button
@@ -191,7 +201,7 @@ const Auth = () => {
               setError('');
               setFormData({ email: '', password: '', name: '', confirmPassword: '' });
             }}
-            className="text-green-400 hover:text-green-300 font-medium mt-2 transition-colors"
+            className="w-full text-green-600 hover:text-green-700 font-semibold mt-3 transition-colors py-2 rounded-lg hover:bg-green-50"
           >
             {isLogin ? 'Sign up here' : 'Sign in here'}
           </button>

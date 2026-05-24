@@ -42,6 +42,29 @@ export interface GameState {
   };
   streakState: StreakState;
   notifications: string[];
+  lastChallengeRefresh: number;
+}
+
+export const CHALLENGE_POOL = [
+  { title: 'Plant a Tree', description: 'Add a tree to your eco village.', points: 50 },
+  { title: 'Collect Ocean Trash', description: 'Play a cleanup round.', points: 40 },
+  { title: 'Learn Sustain', description: 'Watch an educational video in the Learn section.', points: 30 },
+  { title: 'Solar Upgrade', description: 'Install a solar panel in your village.', points: 60 },
+  { title: 'Pure Water', description: 'Install a water filter in your village.', points: 45 },
+  { title: 'Eco Post', description: 'Create a post in the community board.', points: 25 },
+  { title: 'Quiz Whiz', description: 'Complete a sustainability quiz.', points: 35 },
+];
+
+export function generateDailyChallenges(seedTime: number = Date.now()): GameState['dailyChallenges'] {
+  const shuffled = [...CHALLENGE_POOL].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, 3).map((c, i) => ({
+    id: `c_${seedTime}_${i}`,
+    title: c.title,
+    description: c.description,
+    points: c.points,
+    progress: 0,
+    completed: false,
+  }));
 }
 
 interface GameActionBase {
@@ -264,6 +287,12 @@ function reducer(state: GameState, action: GameAction): GameState {
           c.id === action.payload.id ? { ...c, ...action.payload.data } : c
         ),
       };
+    case 'REFRESH_CHALLENGES':
+      return {
+        ...state,
+        dailyChallenges: action.payload.challenges,
+        lastChallengeRefresh: action.payload.lastChallengeRefresh
+      };
     case 'UPDATE_ECO_VILLAGE':
       return {
         ...state,
@@ -323,6 +352,24 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     setTimeout(() => dispatchBase({ type: 'SIMULATE_TIME' }), 100);
   }, [user]);
+
+  const lastRefresh = state.lastChallengeRefresh;
+  React.useEffect(() => {
+    if (!user || !lastRefresh) return;
+    const interval = setInterval(() => {
+      const now = Date.now();
+      if (now - lastRefresh >= 24 * 60 * 60 * 1000) {
+        dispatchBase({
+          type: 'REFRESH_CHALLENGES',
+          payload: {
+            challenges: generateDailyChallenges(now),
+            lastChallengeRefresh: now
+          }
+        });
+      }
+    }, 15000); // Check every 15 seconds
+    return () => clearInterval(interval);
+  }, [user, lastRefresh]);
 
   React.useEffect(() => {
     if (!user) return;
