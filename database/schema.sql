@@ -6,12 +6,16 @@ CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   email TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL,
+  avatar_url TEXT,
   points INTEGER DEFAULT 0,
   level INTEGER DEFAULT 1,
   eco_score INTEGER DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Note: To apply this to an existing database, run:
+-- ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT;
 
 -- 2. Eco Villages table
 CREATE TABLE IF NOT EXISTS eco_villages (
