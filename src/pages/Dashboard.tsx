@@ -850,6 +850,11 @@ const Dashboard = () => {
         </motion.div>
       </div>
 
+      {/* Recommended Challenges */}
+      <div className="mt-8">
+        <RecommendedChallenges />
+      </div>
+
       {/* XP / Streak / Leaderboard Panel */}
       <XPPanel authUser={authUser} />
 

@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS game_scores (
   user_id UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,
   game_type TEXT NOT NULL,
   score INTEGER DEFAULT 0,
+  level_reached INTEGER,
   trash_collected INTEGER DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -61,9 +62,16 @@ CREATE TABLE IF NOT EXISTS community_posts (
   title TEXT NOT NULL,
   content TEXT,
   likes INTEGER DEFAULT 0,
+  replies INTEGER DEFAULT 0,
+  author_name TEXT,
+  category TEXT,
+  tags TEXT[] DEFAULT '{}',
+  is_solved BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+-- replies is incremented by increment_post_replies() RPC (SECURITY DEFINER)
+-- no direct app writes to this column
 
 -- 6. Events table
 CREATE TABLE IF NOT EXISTS events (
@@ -71,6 +79,14 @@ CREATE TABLE IF NOT EXISTS events (
   title TEXT NOT NULL,
   description TEXT,
   event_date TIMESTAMP WITH TIME ZONE,
+  -- 'date' mirrors event_date; kept for frontend query compatibility
+  date TIMESTAMPTZ,
+  time TEXT,
+  type TEXT,
+  participants INTEGER DEFAULT 0,
+  max_participants INTEGER,
+  organizer TEXT,
+  image_url TEXT,
   location TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -103,3 +119,33 @@ CREATE POLICY "Users can manage own scores" ON game_scores FOR ALL USING (auth.u
 CREATE POLICY "Users can manage own challenges" ON challenges FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Users can manage own posts" ON community_posts FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Anyone can view events" ON events FOR SELECT USING (true);
+
+-- ============================================================
+-- Recommendation Engine Extensions
+-- ============================================================
+
+-- Alter challenges table to store recommendation metadata
+ALTER TABLE challenges ADD COLUMN IF NOT EXISTS is_recommended BOOLEAN DEFAULT FALSE;
+ALTER TABLE challenges ADD COLUMN IF NOT EXISTS category TEXT;
+ALTER TABLE challenges ADD COLUMN IF NOT EXISTS difficulty TEXT;
+ALTER TABLE challenges ADD COLUMN IF NOT EXISTS recommendation_reason TEXT;
+
+-- Create user eco preferences table
+CREATE TABLE IF NOT EXISTS user_eco_preferences (
+  user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  water_preference NUMERIC(4,2) DEFAULT 1.0,
+  energy_preference NUMERIC(4,2) DEFAULT 1.0,
+  waste_preference NUMERIC(4,2) DEFAULT 1.0,
+  biodiversity_preference NUMERIC(4,2) DEFAULT 1.0,
+  community_preference NUMERIC(4,2) DEFAULT 1.0,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS on preferences table
+ALTER TABLE user_eco_preferences ENABLE ROW LEVEL SECURITY;
+
+-- Drop policy if exists
+DROP POLICY IF EXISTS "Users can manage own preferences" ON user_eco_preferences;
+
+-- Policy for preferences
+CREATE POLICY "Users can manage own preferences" ON user_eco_preferences FOR ALL USING (auth.uid() = user_id);
