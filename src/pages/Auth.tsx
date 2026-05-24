@@ -32,16 +32,17 @@ const Auth = () => {
   const validateName = (name: string) => {
     return /^[a-zA-Z\s]+$/.test(name.trim());
   };
-
+  
   //password strength checker
   const getPasswordStrength = (password: string) => {
-    if (password.length < 6) return 'Weak';
+    if (password.length < 8) return 'Weak';
 
+    const hasLowerCase = /[a-z]/.test(password);
     const hasUpperCase = /[A-Z]/.test(password);
     const hasNumber = /\d/.test(password);
-    const hasSpecialChar = /[!@#$%^&*]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
-    if (hasUpperCase && hasNumber && hasSpecialChar) {
+    if (hasLowerCase && hasUpperCase && hasNumber && hasSpecialChar) {
       return 'Strong';
     }
 
@@ -96,31 +97,42 @@ const Auth = () => {
     }
 
     //password validation
-    if (name === 'password') {
-      const hasUpperCase = /[A-Z]/.test(value);
-      const hasLowerCase = /[a-z]/.test(value);
-      const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(value);
-      const hasDigit = /\d/.test(value);
-
-      let passwordError = '';
+    if (name === 'password' && !isLogin) {
+      const errors: string[] = [];
 
       if (value.length < 8) {
-        passwordError = 'Password must be at least 8 characters.';
-      } else if (!hasUpperCase) {
-        passwordError = 'Password must contain at least one uppercase letter.';
-      } else if (!hasLowerCase) {
-        passwordError = 'Password must contain at least one lowercase letter.';
-      } else if (!hasDigit) {
-        passwordError = 'Password must contain at least one number.';
-      } else if (!hasSpecialChar) {
-        passwordError = 'Password must contain at least one special character.';
+        errors.push('At least 8 characters');
       }
+
+      if (!/[A-Z]/.test(value)) {
+        errors.push('One uppercase letter');
+      }
+
+      if (!/[a-z]/.test(value)) {
+        errors.push('One lowercase letter');
+      }
+
+      if (!/\d/.test(value)) {
+        errors.push('One number');
+      }
+
+      if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+        errors.push('One special character');
+      }
+
       setFieldErrors((prev) => ({
         ...prev,
-        password: passwordError
+        password: errors.join(', '),
+
+        confirmPassword:
+          formData.confirmPassword &&
+          value !== formData.confirmPassword
+            ? 'Passwords do not match.'
+            : ''
       }));
     }
 
+    //confirmation of password
     if (name === 'confirmPassword') {
       if (value !== formData.password) {
         setFieldErrors((prev) => ({
@@ -163,8 +175,8 @@ const Auth = () => {
           return;
         }
 
-        if (formData.password.length < 6) {
-          setError('Password must be at least 6 characters.');
+        if (formData.password.length < 8) {
+          setError('Password must be at least 8 characters.');
           return;
         }
 
@@ -191,26 +203,25 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-50 to-gray-100">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-white rounded-2xl border-2 border-gray-200 shadow-2xl p-8 w-full max-w-md"
+        className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 p-8 w-full max-w-md"
       >
         {/* Header */}
         <div className="text-center mb-8">
           <motion.div
             whileHover={{ rotate: 360 }}
             transition={{ duration: 0.8 }}
-            className="bg-gradient-to-br from-green-500 to-emerald-600 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center shadow-lg"
+            className="bg-green-500 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center"
           >
             <Leaf className="h-8 w-8 text-white" />
           </motion.div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-white mb-2">
             {isLogin ? 'Welcome Back!' : 'Join EcoPlay'}
           </h1>
-          {/* ACCESSIBILITY FIX: Changed from text-blue-100 to text-gray-700 for 7.5:1 contrast ratio */}
-          <p className="text-gray-700 font-medium">
+          <p className="text-blue-100">
             {isLogin ? 'Continue your environmental journey' : 'Start your eco-friendly adventure'}
           </p>
         </div>
@@ -219,23 +230,23 @@ const Auth = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           {!isLogin && (
             <div>
-              {/* ACCESSIBILITY FIX: Updated label color to text-gray-800 */}
-              <label className="block text-gray-800 font-semibold mb-2">Full Name</label>
+              <label className="block text-white font-medium mb-2">Full Name</label>
               <div className="relative">
-                {/* ACCESSIBILITY FIX: Updated icon color to text-gray-500 */}
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-300 h-5 w-5" />
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
+                  aria-invalid={!!fieldErrors.name}
+                  aria-describedby={fieldErrors.name ? 'name-error' : undefined}
                   className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all"
                   placeholder="Enter your full name"
                   required={!isLogin}
                 />
               </div>
               {fieldErrors.name && (
-                <p className="text-red-300 text-sm mt-2">
+                <p id="name-error" role="alert" className="text-red-300 text-sm mt-2">
                   {fieldErrors.name}
                 </p>
               )}
@@ -243,47 +254,47 @@ const Auth = () => {
           )}
 
           <div>
-            {/* ACCESSIBILITY FIX: Updated label color to text-gray-800 */}
-            <label className="block text-gray-800 font-semibold mb-2">Email</label>
+            <label className="block text-white font-medium mb-2">Email</label>
             <div className="relative">
-              {/* ACCESSIBILITY FIX: Updated icon color to text-gray-500 */}
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-300 h-5 w-5" />
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
+                aria-invalid={!!fieldErrors.email}
+                aria-describedby={fieldErrors.email ? 'email-error' : undefined}
                 className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all"
                 placeholder="Enter your email"
                 required
               />
             </div>
             {fieldErrors.email && (
-              <p className="text-red-300 text-sm mt-2">
+              <p id="email-error" role="alert" className="text-red-300 text-sm mt-2" >
                 {fieldErrors.email}
               </p>
             )}
           </div>
 
           <div>
-            {/* ACCESSIBILITY FIX: Updated label color to text-gray-800 */}
-            <label className="block text-gray-800 font-semibold mb-2">Password</label>
+            <label className="block text-white font-medium mb-2">Password</label>
             <div className="relative">
-              {/* ACCESSIBILITY FIX: Updated icon color to text-gray-500 */}
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-300 h-5 w-5" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                className="w-full pl-10 pr-12 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all"
+                aria-invalid={!!fieldErrors.password}
+                aria-describedby={fieldErrors.password ? 'password-error' : undefined}
+                className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all"
                 placeholder="Enter your password"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-900 transition-colors"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-300 hover:text-white"
               >
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
@@ -309,7 +320,7 @@ const Auth = () => {
             )}
 
             {fieldErrors.password && (
-              <p className="text-red-300 text-sm mt-2">
+              <p id="password-error" role="alert" className="text-red-300 text-sm mt-2">
                 {fieldErrors.password}
               </p>
             )}
@@ -317,23 +328,23 @@ const Auth = () => {
 
           {!isLogin && (
             <div>
-              {/* ACCESSIBILITY FIX: Updated label color to text-gray-800 */}
-              <label className="block text-gray-800 font-semibold mb-2">Confirm Password</label>
+              <label className="block text-white font-medium mb-2">Confirm Password</label>
               <div className="relative">
-                {/* ACCESSIBILITY FIX: Updated icon color to text-gray-500 */}
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-300 h-5 w-5" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
+                  aria-invalid={!!fieldErrors.confirmPassword}
+                  aria-describedby={fieldErrors.confirmPassword ? 'confirmPassword-error' : undefined}
                   className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all"
                   placeholder="Confirm your password"
                   required={!isLogin}
                 />
               </div>
               {fieldErrors.confirmPassword && (
-                <p className="text-red-300 text-sm mt-2">
+                <p id="confirmPassword-error" role="alert" className="text-red-300 text-sm mt-2">
                   {fieldErrors.confirmPassword}
                 </p>
               )}
@@ -344,37 +355,40 @@ const Auth = () => {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-red-50 border-2 border-red-300 text-red-800 p-3 rounded-xl text-sm font-medium"
+              className="bg-red-500/20 border border-red-400/30 text-red-300 p-3 rounded-xl text-sm"
             >
               {error}
             </motion.div>
           )}
 
-          {/* ACCESSIBILITY FIX: Smooth gradient transition instead of abrupt split */}
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={
               loading ||
-              !formData.name.trim() ||
               !formData.email.trim() ||
               !formData.password.trim() ||
-              !formData.confirmPassword.trim() ||
-              formData.password !== formData.confirmPassword ||
               !!fieldErrors.email ||
               !!fieldErrors.password ||
-              !!fieldErrors.name
+              (!isLogin &&
+                (
+                  !formData.name.trim() ||
+                  !formData.confirmPassword.trim() ||
+                  formData.password !== formData.confirmPassword ||
+                  !!fieldErrors.name ||
+                  !!fieldErrors.confirmPassword
+                ))
             }
-            className="w-full bg-gradient-to-r from-green-500 via-emerald-500 to-blue-500 text-white font-bold py-3 px-6 rounded-xl hover:from-green-600 hover:via-emerald-600 hover:to-blue-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+            className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold py-3 px-6 rounded-xl hover:from-green-600 hover:to-blue-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Create Account')}
           </motion.button>
         </form>
 
         {/* Toggle */}
-        <div className="mt-6 pt-6 border-t-2 border-gray-200">
-          <p className="text-gray-700 font-medium text-center">
+        <div className="mt-6 text-center">
+          <p className="text-blue-100">
             {isLogin ? "Don't have an account?" : 'Already have an account?'}
           </p>
           <button
@@ -383,7 +397,7 @@ const Auth = () => {
               setError('');
               setFormData({ email: '', password: '', name: '', confirmPassword: '' });
             }}
-            className="w-full text-green-600 hover:text-green-700 font-semibold mt-3 transition-colors py-2 rounded-lg hover:bg-green-50"
+            className="text-green-400 hover:text-green-300 font-medium mt-2 transition-colors"
           >
             {isLogin ? 'Sign up here' : 'Sign in here'}
           </button>
