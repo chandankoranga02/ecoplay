@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Award, Clock, MessageCircle, Plus, Reply, Search, Share2, ThumbsUp } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import {
   chipBase,
   glassCard,
@@ -18,7 +20,8 @@ import { useAuth } from '../context/AuthContext';
 import { dbFunctions, CommunityPost } from '../lib/supabase';
 
 const Community = () => {
-  const { user } = useAuth();
+  const { isGuest } = useAuth();
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [showNewPost, setShowNewPost] = useState(false);
@@ -214,6 +217,24 @@ const Community = () => {
     const date = new Date(dateString);
     return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
   };
+
+  if (isGuest) {
+    return (
+      <div className={`${pageShell} min-h-screen flex items-center justify-center`}>
+        <div className="w-full max-w-xl rounded-2xl border border-white/20 bg-white/90 p-8 text-center shadow-2xl dark:bg-white/5">
+          <h1 className="text-3xl font-bold text-sky-950 dark:text-white">
+            Community features are available to registered users.
+          </h1>
+          <button
+            onClick={() => navigate('/login')}
+            className={`${primaryButton} mt-6 justify-center`}
+          >
+            Sign In to Continue
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <motion.div
